@@ -1,251 +1,253 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- State & Variables ---
-    const API_PRODUCTS = 'https://fakestoreapi.com/products';
-    const API_CATEGORIES = 'https://fakestoreapi.com/products/categories';
 
-    let allProducts = [];
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // fetching data APIs
+    const products_api = 'https://fakestoreapi.com/products';
+    const categories_api = 'https://fakestoreapi.com/products/categories';
 
-    // --- DOM Elements ---
-    const productGrid = document.getElementById('product-grid');
-    const categoryFilters = document.getElementById('category-filters');
-    const loader = document.getElementById('loader');
-    const cartCountBadge = document.getElementById('cart-count');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+    // variables
+    let all_products = [];
+    let my_cart = JSON.parse(localStorage.getItem('cart'));
 
-    // Modal Elements
-    const modal = document.getElementById('product-modal');
-    const modalBackdrop = document.getElementById('modal-backdrop');
-    const modalCloseBtn = document.getElementById('modal-close');
-    const modalTitle = document.getElementById('modal-title');
-    const modalImage = document.getElementById('modal-image');
-    const modalDescription = document.getElementById('modal-description');
-    const modalPrice = document.getElementById('modal-price');
-    const modalRating = document.getElementById('modal-rating');
-    const modalAddToCartBtn = document.getElementById('modal-add-to-cart');
-
-    // --- Initialization ---
-    init();
-
-    function init() {
-        updateCartCount();
-        fetchCategories();
-        fetchProducts();
-
-        // Event Listeners
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Modal Close Listeners
-        modalCloseBtn.addEventListener('click', closeModal);
-        modalBackdrop.addEventListener('click', closeModal);
+    // checks if cart is null
+    if (my_cart == null) {
+        my_cart = [];
     }
 
-    // --- Fetching Data ---
-    async function fetchProducts() {
-        showLoader();
+    // getting elements from HTML
+    const grid = document.getElementById('product-grid');
+    const filters = document.getElementById('category-filters');
+    const load_spinner = document.getElementById('loader');
+    const cart_badge = document.getElementById('cart-count');
+
+    // mobile menu stuff
+    const menu_btn = document.getElementById('mobile-menu-btn');
+    const mobile_menu = document.getElementById('mobile-menu');
+
+    // modal elements
+    const modal_box = document.getElementById('product-modal');
+    const close_btn = document.getElementById('modal-close');
+    const title_text = document.getElementById('modal-title');
+    const img_elem = document.getElementById('modal-image');
+    const desc_text = document.getElementById('modal-description');
+    const price_text = document.getElementById('modal-price');
+    const rate_box = document.getElementById('modal-rating');
+    const modal_add_btn = document.getElementById('modal-add-to-cart');
+
+    // call these functions when page loads
+    updateCart();
+    getCategories();
+    getProducts();
+
+    // click listener for mobile menu
+    menu_btn.addEventListener('click', () => {
+        // toggle hidden class
+        if (mobile_menu.classList.contains('hidden')) {
+            mobile_menu.classList.remove('hidden');
+        } else {
+            mobile_menu.classList.add('hidden');
+        }
+    });
+
+    // close modal
+    close_btn.addEventListener('click', () => {
+        modal_box.classList.add('hidden');
+    });
+
+    // close clicking outside
+    modal_box.addEventListener('click', (e) => {
+        if (e.target === modal_box) {
+            modal_box.classList.add('hidden');
+        }
+    });
+
+    // function to get products
+    async function getProducts() {
+        console.log("fetching products...");
+
+        // show loader
+        load_spinner.classList.remove('hidden');
+        grid.classList.add('hidden');
+
         try {
-            const response = await fetch(API_PRODUCTS);
-            allProducts = await response.json();
-            renderProducts(allProducts);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            productGrid.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load products. Please try again later.</p>';
-        } finally {
-            hideLoader();
+            const res = await fetch(products_api);
+            const data = await res.json();
+            all_products = data;
+            console.log(all_products);
+
+            showProducts(all_products);
+        } catch (err) {
+            console.log(err);
+            grid.innerHTML = '<p style="text-align: center; color: red;">Error loading data</p>';
+        }
+
+        // hide loader
+        load_spinner.classList.add('hidden');
+        grid.classList.remove('hidden');
+    }
+
+    // function to get categories
+    async function getCategories() {
+        try {
+            const res = await fetch(categories_api);
+            const cat_data = await res.json();
+
+            // show category buttons
+            makeCategoryButtons(cat_data);
+        } catch (err) {
+            console.log(err);
         }
     }
 
-    async function fetchCategories() {
-        try {
-            const response = await fetch(API_CATEGORIES);
-            const categories = await response.json();
-            renderCategories(categories);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
+    function makeCategoryButtons(cats) {
+        // add All button first
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline active';
+        btn.innerText = 'All';
+
+        // click event
+        btn.addEventListener('click', (event) => {
+            filterData(event, 'all');
+        });
+
+        filters.appendChild(btn);
+
+        // loop for other buttons
+        for (let i = 0; i < cats.length; i++) {
+            const catName = cats[i];
+            const b = document.createElement('button');
+            b.className = 'btn btn-outline';
+            b.style.textTransform = 'capitalize';
+            b.innerText = catName;
+
+            b.addEventListener('click', (event) => {
+                filterData(event, catName);
+            });
+            filters.appendChild(b);
         }
     }
 
-    // --- Rendering ---
-    function renderCategories(categories) {
-        // "All" button
-        const allBtn = document.createElement('button');
-        allBtn.className = 'btn btn-outline active';
-        allBtn.textContent = 'All';
-        allBtn.dataset.category = 'all';
-        allBtn.addEventListener('click', (e) => handleFilterClick(e, 'all'));
-        categoryFilters.appendChild(allBtn);
+    // display products on screen
+    function showProducts(items) {
+        grid.innerHTML = '';
 
-        // Category buttons
-        categories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-outline capitalize';
-            btn.textContent = cat;
-            btn.dataset.category = cat;
-            btn.addEventListener('click', (e) => handleFilterClick(e, cat));
-            categoryFilters.appendChild(btn);
-        });
-    }
-
-    function renderProducts(products) {
-        productGrid.innerHTML = '';
-
-        if (products.length === 0) {
-            productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
+        if (items.length == 0) {
+            grid.innerHTML = '<p>No items found</p>';
             return;
         }
 
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
+        // loop through products
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'product-card';
 
-            card.innerHTML = `
+            // html template
+            div.innerHTML = `
                 <div class="product-image-container">
-                    <img src="${product.image}" alt="${product.title}" class="product-image">
+                    <img src="${item.image}" alt="${item.title}" class="product-image">
                 </div>
+                
                 <div class="product-details">
-                    <!-- Category & Rating Row -->
                     <div class="flex justify-between items-center mb-4">
-                        <span class="category-badge">
-                            ${product.category}
-                        </span>
-                        <div class="flex items-center" style="font-size: 0.875rem; color: var(--text-muted);">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16" style="color: var(--warning); margin-right: 0.25rem;">
-                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                            </svg>
-                            <span>${product.rating.rate} (${product.rating.count})</span>
+                        <span class="category-badge">${item.category}</span>
+                        
+                        <div class="flex items-center" style="font-size: 14px; color: gray;">
+                             <span>★ ${item.rating.rate} (${item.rating.count})</span>
                         </div>
                     </div>
-
-                    <h3 class="product-title" title="${product.title}">${product.title}</h3>
-                    <p class="product-price">$${product.price.toFixed(2)}</p>
+  
+                    <h3 class="product-title" title="${item.title}">${item.title}</h3>
+                    <p class="product-price">$${item.price}</p>
                     
-                            </svg>
-                            Add
-                        </button>
+                    <div style="margin-top: auto; display: flex; gap: 10px;">
+                        <button class="details-btn btn btn-outline" style="flex: 1;">Details</button>
+                        <button class="add-btn btn btn-primary" style="flex: 1;">Add</button>
                     </div>
                 </div>
             `;
 
-            // Add Event Listeners to Buttons specific to this card
-            const detailsBtn = card.querySelector('.details-btn');
-            detailsBtn.addEventListener('click', () => openModal(product));
+            // add listeners manually
+            const d_btn = div.querySelector('.details-btn');
+            d_btn.addEventListener('click', () => {
+                showModal(item);
+            });
 
-            const addCartBtn = card.querySelector('.add-cart-btn');
-            addCartBtn.addEventListener('click', () => addToCart(product));
+            const a_btn = div.querySelector('.add-btn');
+            a_btn.addEventListener('click', () => {
+                addItem(item);
+            });
 
-            productGrid.appendChild(card);
+            grid.appendChild(div);
         });
     }
 
-    // --- Filtering Logic ---
-    async function handleFilterClick(e, category) {
-        // Update Active Button UI
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active', 'bg-indigo-600', 'text-white');
-            btn.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-200');
-        });
-        e.target.classList.add('active', 'bg-indigo-600', 'text-white');
-        e.target.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
+    // filtering function
+    async function filterData(e, category) {
+        // change active class
+        const buttons = document.querySelectorAll('#category-filters button');
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        e.target.classList.add('active');
 
-        // Fetch/Filter Logic
-        showLoader();
-        productGrid.innerHTML = '';
+        // load again
+        load_spinner.classList.remove('hidden');
+        grid.innerHTML = '';
 
-        try {
-            let productsToRender = [];
-            if (category === 'all') {
-                // If we already have allProducts fetched, use them. Else fetch.
-                if (allProducts.length > 0) {
-                    productsToRender = allProducts;
-                } else {
-                    const response = await fetch(API_PRODUCTS);
-                    allProducts = await response.json();
-                    productsToRender = allProducts;
-                }
-            } else {
-                const response = await fetch(`https://fakestoreapi.com/products/category/${category}`);
-                productsToRender = await response.json();
+        let list = [];
+
+        if (category == 'all') {
+            list = all_products;
+            // reload if empty
+            if (list.length == 0) {
+                const r = await fetch(products_api);
+                list = await r.json();
             }
-            renderProducts(productsToRender);
-        } catch (error) {
-            console.error('Error filtering products:', error);
-            productGrid.innerHTML = '<p class="text-center col-span-full">Error loading category products.</p>';
-        } finally {
-            hideLoader();
+        } else {
+            // handle spaces in url
+            const safeCat = encodeURIComponent(category);
+            const r = await fetch(products_api + '/category/' + safeCat);
+            list = await r.json();
         }
+
+        showProducts(list);
+        load_spinner.classList.add('hidden');
     }
 
-    // --- Cart System ---
-    function addToCart(product) {
-        cart.push(product);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
+    function addItem(p) {
+        console.log("adding to cart: " + p.title);
+        my_cart.push(p);
 
-        // Optional: Simple Toast/Alert
-        // alert(`${product.title} added to cart!`);
-        // Better: Change button text temporarily
-        const btns = document.querySelectorAll('.add-cart-btn'); // simplified selector, logic could be more specific
-        // In a real app, we'd reference the specific button instance more directly or use feedback UI.
+        // save to local storage
+        localStorage.setItem('cart', JSON.stringify(my_cart));
+        updateCart();
     }
 
-    function updateCartCount() {
-        cartCountBadge.innerText = cart.length;
+    function updateCart() {
+        cart_badge.innerText = my_cart.length;
     }
 
-    // --- Modal System ---
-    function openModal(product) {
-        modalTitle.textContent = product.title;
-        modalImage.src = product.image;
-        modalDescription.textContent = product.description;
-        modalPrice.textContent = `$${product.price.toFixed(2)}`;
+    // modal function
+    function showModal(product) {
+        title_text.innerText = product.title;
+        img_elem.src = product.image;
+        desc_text.innerText = product.description;
+        price_text.innerText = '$' + product.price;
 
-        // Render Stars
-        modalRating.innerHTML = '';
-        const fullStars = Math.round(product.rating.rate);
-        for (let i = 0; i < 5; i++) {
-            const star = document.createElement('span');
-            star.innerHTML = i < fullStars ? '&#9733;' : '&#9734;'; // Simple star char
-            modalRating.appendChild(star);
-        }
-        const countSpan = document.createElement('span');
-        countSpan.textContent = `(${product.rating.count})`;
-        countSpan.style.color = 'var(--text-muted)';
-        countSpan.style.marginLeft = '0.5rem';
-        modalRating.appendChild(countSpan);
+        // simple stars
+        rate_box.innerHTML = 'Rating: ' + product.rating.rate;
 
-        // Update Add to Cart button in Modal to add THIS product
-        const newBtn = modalAddToCartBtn.cloneNode(true);
-        newBtn.addEventListener('click', () => {
-            addToCart(product);
-            closeModal();
+        // replace button to clear events
+        const new_btn = modal_add_btn.cloneNode(true);
+        new_btn.innerText = 'Add to Cart';
+
+        new_btn.addEventListener('click', () => {
+            addItem(product);
+            modal_box.classList.add('hidden');
         });
-        modalAddToCartBtn.parentNode.replaceChild(newBtn, modalAddToCartBtn);
-        // Re-assign because element was replaced
-        const updatedBtn = document.getElementById('modal-add-to-cart'); // Get the new button from DOM if needed, but here simple replace works.
-        // Actually, better to just update the reference if we were reusing it, but here we query dynamically or just clone. 
-        // Let's stick to the clone approach but ensure we don't lose the reference for next time if it was global. 
-        // In this script, modalAddToCartBtn is const, so we can't reassign. 
-        // Better approach: Just set onclick or use a different pattern. 
-        // For now, let's just do the clone and replace.
 
-        modal.classList.remove('hidden');
+        modal_add_btn.parentNode.replaceChild(new_btn, modal_add_btn);
+
+        modal_box.classList.remove('hidden');
     }
 
-    function closeModal() {
-        modal.classList.add('hidden');
-    }
-
-    // --- Helpers ---
-    function showLoader() {
-        loader.classList.remove('hidden');
-        productGrid.classList.add('hidden');
-    }
-
-    function hideLoader() {
-        loader.classList.add('hidden');
-        productGrid.classList.remove('hidden');
-    }
 });
