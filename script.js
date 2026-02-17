@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalImage = document.getElementById('modal-image');
     const modalDescription = document.getElementById('modal-description');
     const modalPrice = document.getElementById('modal-price');
+    const modalRating = document.getElementById('modal-rating');
     const modalAddToCartBtn = document.getElementById('modal-add-to-cart');
 
     // --- Initialization ---
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCategories(categories) {
         // "All" button
         const allBtn = document.createElement('button');
-        allBtn.className = 'filter-btn active rounded-full bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-md transition hover:bg-indigo-700 focus:outline-none';
+        allBtn.className = 'btn btn-outline active';
         allBtn.textContent = 'All';
         allBtn.dataset.category = 'all';
         allBtn.addEventListener('click', (e) => handleFilterClick(e, 'all'));
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Category buttons
         categories.forEach(cat => {
             const btn = document.createElement('button');
-            btn.className = 'filter-btn rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 focus:outline-none capitalize';
+            btn.className = 'btn btn-outline capitalize';
             btn.textContent = cat;
             btn.dataset.category = cat;
             btn.addEventListener('click', (e) => handleFilterClick(e, cat));
@@ -98,26 +99,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         products.forEach(product => {
             const card = document.createElement('div');
-            card.className = 'product-card group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-lg flex flex-col h-full';
+            card.className = 'product-card';
 
             card.innerHTML = `
-                <div class="relative flex h-64 items-center justify-center overflow-hidden bg-white p-4">
-                    <img src="${product.image}" alt="${product.title}" class="h-56 object-contain transition duration-300 group-hover:scale-105">
-                    <span class="absolute top-3 left-3 rounded bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-800 capitalize">${product.category}</span>
+                <div class="product-image-container">
+                    <img src="${product.image}" alt="${product.title}" class="product-image">
                 </div>
-                <div class="p-5 flex flex-col flex-grow">
-                    <h3 class="truncate text-lg font-bold text-gray-900 mb-1" title="${product.title}">${product.title}</h3>
-                    <div class="flex items-center mb-2">
-                        <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                        </svg>
-                        <span class="ml-1 text-xs text-gray-500">(${product.rating.count})</span>
+                <div class="product-details">
+                    <!-- Category & Rating Row -->
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="category-badge">
+                            ${product.category}
+                        </span>
+                        <div class="flex items-center" style="font-size: 0.875rem; color: var(--text-muted);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16" style="color: var(--warning); margin-right: 0.25rem;">
+                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                            <span>${product.rating.rate} (${product.rating.count})</span>
+                        </div>
                     </div>
-                    <p class="text-xl font-bold text-gray-900 mb-4">$${product.price.toFixed(2)}</p>
+
+                    <h3 class="product-title" title="${product.title}">${product.title}</h3>
+                    <p class="product-price">$${product.price.toFixed(2)}</p>
                     
-                    <div class="mt-auto flex gap-2">
-                        <button class="details-btn flex-1 rounded-lg border border-gray-300 bg-white py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50">Details</button>
-                        <button class="add-cart-btn flex-1 rounded-lg bg-indigo-600 py-2 text-sm font-medium text-white shadow-md transition hover:bg-indigo-700">Add</button>
+                            </svg>
+                            Add
+                        </button>
                     </div>
                 </div>
             `;
@@ -195,14 +202,34 @@ document.addEventListener('DOMContentLoaded', () => {
         modalDescription.textContent = product.description;
         modalPrice.textContent = `$${product.price.toFixed(2)}`;
 
+        // Render Stars
+        modalRating.innerHTML = '';
+        const fullStars = Math.round(product.rating.rate);
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = i < fullStars ? '&#9733;' : '&#9734;'; // Simple star char
+            modalRating.appendChild(star);
+        }
+        const countSpan = document.createElement('span');
+        countSpan.textContent = `(${product.rating.count})`;
+        countSpan.style.color = 'var(--text-muted)';
+        countSpan.style.marginLeft = '0.5rem';
+        modalRating.appendChild(countSpan);
+
         // Update Add to Cart button in Modal to add THIS product
-        // Remove old listeners to avoid duplicates (cloning node is a trick, or just overwrite onclick)
         const newBtn = modalAddToCartBtn.cloneNode(true);
         newBtn.addEventListener('click', () => {
             addToCart(product);
             closeModal();
         });
         modalAddToCartBtn.parentNode.replaceChild(newBtn, modalAddToCartBtn);
+        // Re-assign because element was replaced
+        const updatedBtn = document.getElementById('modal-add-to-cart'); // Get the new button from DOM if needed, but here simple replace works.
+        // Actually, better to just update the reference if we were reusing it, but here we query dynamically or just clone. 
+        // Let's stick to the clone approach but ensure we don't lose the reference for next time if it was global. 
+        // In this script, modalAddToCartBtn is const, so we can't reassign. 
+        // Better approach: Just set onclick or use a different pattern. 
+        // For now, let's just do the clone and replace.
 
         modal.classList.remove('hidden');
     }

@@ -5,270 +5,228 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart - Best Collection For You</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="text-slate-800 bg-gray-50">
+<body>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 z-10 w-full bg-white shadow-sm">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
+    <nav class="navbar">
+        <div class="container flex justify-between items-center" style="width: 100%;">
 
-                <!-- Logo -->
-                <div class="flex flex-shrink-0 items-center">
-                    <a href="#" class="text-2xl font-bold tracking-tight text-indigo-600">SwiftCart</a>
-                </div>
+            <!-- Logo -->
+            <a href="#" class="nav-logo">SwiftCart</a>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#" onclick="renderAllProducts()"
-                        class="font-medium text-gray-700 transition hover:text-indigo-600">Home</a>
-                    <a href="#products" class="font-medium text-gray-700 transition hover:text-indigo-600">Products</a>
-                    <a href="#about" class="font-medium text-gray-700 transition hover:text-indigo-600">About</a>
-                    <a href="#contact" class="font-medium text-gray-700 transition hover:text-indigo-600">Contact</a>
-                </div>
-
-                <!-- Icons (Cart) -->
-                <div class="flex items-center space-x-4">
-                    <button class="relative p-2 text-gray-500 transition hover:text-indigo-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span id="cart-count"
-                            class="absolute top-0 right-0 inline-flex -translate-y-1/4 translate-x-1/4 transform items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
-                            0
-                        </span>
-                    </button>
-
-                    <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-btn"
-                        class="md:hidden text-gray-500 hover:text-indigo-600 focus:outline-none ml-2">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+            <!-- Desktop Menu -->
+            <div class="nav-links">
+                <a href="#" onclick="renderAllProducts()" class="nav-link">Home</a>
+                <a href="#products" class="nav-link">Products</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </div>
+
+            <!-- Icons (Cart + Mobile) -->
+            <div class="flex items-center gap-4">
+                <button class="relative" style="position: relative;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-count" class="badge">0</span>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden" style="display: none;">
+                    <!-- Hidden by default, script will toggle -->
+                    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden border-t border-gray-100 bg-white md:hidden">
-            <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-                <a href="#" onclick="renderAllProducts()"
-                    class="block rounded-md bg-indigo-50 px-3 py-2 text-base font-medium text-indigo-600">Home</a>
-                <a href="#products"
-                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">Products</a>
-            </div>
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="#" onclick="renderAllProducts()" class="mobile-nav-link">Home</a>
+            <a href="#products" class="mobile-nav-link">Products</a>
+            <a href="#about" class="mobile-nav-link">About</a>
+            <a href="#contact" class="mobile-nav-link">Contact</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative mt-16 flex h-[500px] items-center bg-gray-900">
-        <div class="absolute inset-0 overflow-hidden">
-            <img src="./assets/navbar/banner-image.png" alt="Shopping" class="h-full w-full object-cover">
-            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <section class="hero mt-16">
+        <div class="hero-bg">
+            <img src="./assets/navbar/banner-image.png" alt="Shopping">
         </div>
 
-        <div class="relative z-0 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="max-w-lg">
-                <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-                    Best Collection For You
-                </h1>
-                <p class="mb-8 text-lg font-light text-gray-200">
-                    Discover the latest trends in fashion, electronics, and more. Shop with confidence and style at
-                    SwiftCart.
-                </p>
-                <a href="#products"
-                    class="inline-block transform rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-105 hover:bg-indigo-700">
-                    Shop Now
-                </a>
-            </div>
+        <div class="container hero-content">
+            <h1 class="hero-title">Best Collection For You</h1>
+            <p class="hero-subtitle">
+                Discover the latest trends in fashion, electronics, and more. Shop with confidence and style at
+                SwiftCart.
+            </p>
+            <a href="#products" class="btn btn-primary btn-lg">Shop Now</a>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="bg-white py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Why Choose Us</h2>
-                <p class="mt-4 text-gray-500">We provide the best shopping experience with top-notch services.</p>
+    <section class="py-16" style="background-color: #fff;">
+        <div class="container">
+            <div class="text-center mb-10">
+                <h2 class="hero-title" style="font-size: 2rem; color: var(--text-main);">Why Choose Us</h2>
+                <p class="mt-4" style="color: var(--text-muted);">We provide the best shopping experience with top-notch
+                    services.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Feature 1 -->
-                <div
-                    class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition text-center md:text-left border border-gray-100">
-                    <div
-                        class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Fast Delivery</h3>
-                    <p class="mt-2 text-sm text-gray-500">Get your orders delivered to your doorstep quickly and
-                        efficiently.</p>
+                    <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Fast Delivery</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Get your orders delivered to your doorstep
+                        quickly and efficiently.</p>
                 </div>
                 <!-- Feature 2 -->
-                <div
-                    class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition text-center md:text-left border border-gray-100">
-                    <div
-                        class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">24/7 Support</h3>
-                    <p class="mt-2 text-sm text-gray-500">Our support team is available around the clock to assist you.
-                    </p>
+                    <h3 style="font-weight: 600; margin-bottom: 0.5rem;">24/7 Support</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Our support team is available around the
+                        clock to assist you.</p>
                 </div>
                 <!-- Feature 3 -->
-                <div
-                    class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition text-center md:text-left border border-gray-100">
-                    <div
-                        class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Secure Payment</h3>
-                    <p class="mt-2 text-sm text-gray-500">Experience safe and secure transactions with our encrypted
-                        payment systems.</p>
+                    <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Secure Payment</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Experience safe and secure transactions
+                        with our encrypted payment systems.</p>
                 </div>
                 <!-- Feature 4 -->
-                <div
-                    class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition text-center md:text-left border border-gray-100">
-                    <div
-                        class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Easy Returns</h3>
-                    <p class="mt-2 text-sm text-gray-500">Not satisfied? Return your products easily within 30 days.</p>
+                    <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Easy Returns</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Not satisfied? Return your products easily
+                        within 30 days.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Products Section -->
-    <section id="products" class="bg-gray-50 py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-10 text-center">
-                <h2 class="text-3xl font-bold text-gray-900">Trending Now</h2>
+    <section id="products" class="py-16">
+        <div class="container">
+            <div class="text-center mb-10">
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Our Products</h2>
             </div>
 
             <!-- Filter Tabs (Dynamic) -->
-            <div id="category-filters" class="mb-10 flex flex-wrap justify-center gap-2">
+            <div id="category-filters" class="flex justify-center gap-2 mb-10" style="flex-wrap: wrap;">
                 <!-- Populated by JS -->
             </div>
 
             <!-- Loader -->
-            <div id="loader" class="hidden flex justify-center py-20">
+            <div id="loader" class="hidden" style="display: flex; justify-content: center; padding: 5rem 0;">
                 <div class="loader"></div>
             </div>
 
             <!-- Product Grid (Dynamic) -->
-            <div id="product-grid"
-                class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 min-h-[400px]">
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 <!-- Populated by JS -->
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 py-12 text-gray-300">
-        <!-- ... (Keeping existing footer structure) ... -->
-        <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
-            <div>
-                <a href="#" class="text-2xl font-bold tracking-tight text-white">SwiftCart</a>
-                <p class="mt-4 text-sm text-gray-400">Your one-stop shop for all your fashion and lifestyle needs.</p>
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <a href="#" style="font-size: 1.5rem; font-weight: 700; color: white;">SwiftCart</a>
+                    <p class="mt-4" style="font-size: 0.875rem;">Your one-stop shop for all your fashion and lifestyle
+                        needs.</p>
+                </div>
+                <div>
+                    <h3>Quick Links</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#products">Products</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Support</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Shipping</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Subscribe</h3>
+                    <form class="mt-4" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="email" required class="footer-input" placeholder="Enter your email"
+                            style="flex: 1;">
+                        <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Subscribe</button>
+                    </form>
+                </div>
             </div>
-            <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Quick Links</h3>
-                <ul class="mt-4 space-y-2">
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white">Home</a></li>
-                    <li><a href="#products" class="text-base text-gray-300 hover:text-white">Products</a></li>
-                </ul>
+            <div style="margin-top: 3rem; border-top: 1px solid #374151; padding-top: 2rem; text-align: center;">
+                <p style="font-size: 0.875rem; color: #9ca3af;">&copy; 2025 SwiftCart, Inc. All rights reserved.</p>
             </div>
-            <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Support</h3>
-                <ul class="mt-4 space-y-2">
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white">FAQ</a></li>
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white">Shipping</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Subscribe</h3>
-                <form class="mt-4 sm:flex sm:max-w-md">
-                    <input type="email" required
-                        class="w-full appearance-none rounded-md border border-transparent bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter your email">
-                    <div class="mt-3 rounded-md sm:mt-0 sm:ml-3 sm:flex-shrink-0">
-                        <button type="submit"
-                            class="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white hover:bg-indigo-700">Subscribe</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="mt-8 border-t border-gray-800 pt-8 text-center">
-            <p class="text-sm text-gray-400">&copy; 2025 SwiftCart, Inc. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- Product Modal -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
-        role="dialog" aria-modal="true">
-        <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div id="product-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div style="padding: 1.5rem;">
+                <div style="text-align: center;">
+                    <img id="modal-image" src="" alt="Product"
+                        style="height: 12rem; margin: 0 auto 1rem; object-fit: contain;">
+                    <h3 id="modal-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Product
+                        Title</h3>
+                    <p id="modal-description"
+                        style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;"></p>
 
-            <!-- Backdrop -->
-            <div id="modal-backdrop" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-            <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
-
-            <!-- Modal Panel -->
-            <div
-                class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg font-bold leading-6 text-gray-900 mb-4" id="modal-title">Product Title
-                            </h3>
-                            <div class="mt-2">
-                                <img id="modal-image" src="" alt="Product" class="mx-auto h-48 object-contain mb-4">
-                                <p class="text-sm text-gray-500 mb-4" id="modal-description">Description goes here...
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <p class="text-2xl font-bold text-indigo-600" id="modal-price">$0.00</p>
-                                    <div id="modal-rating" class="flex items-center text-sm text-yellow-500">
-                                        <!-- Stars will be injected here -->
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="flex justify-between items-center" style="margin-bottom: 1rem;">
+                        <p id="modal-price" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">$0.00
+                        </p>
+                        <div id="modal-rating"
+                            style="display: flex; align-items: center; gap: 0.25rem; color: var(--warning); font-size: 0.875rem;">
+                            <!-- Stars injected here -->
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button"
-                        class="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
-                        id="modal-add-to-cart">Add to Cart</button>
-                    <button type="button"
-                        class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        id="modal-close">Close</button>
+                <div class="flex gap-2 justify-end"
+                    style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                    <button id="modal-close" class="btn btn-outline">Close</button>
+                    <button id="modal-add-to-cart" class="btn btn-primary">Add to Cart</button>
                 </div>
             </div>
         </div>
